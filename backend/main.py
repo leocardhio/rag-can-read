@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import chat, healthcheck
+from routers import chat, healthcheck, documents
 
-app = FastAPI()
+app = FastAPI(debug=True)
 origins = [
   "http://localhost:3000"
 ]
@@ -17,3 +17,4 @@ app.add_middleware(
 
 app.include_router(healthcheck.router)
 app.include_router(chat.router)
+app.include_router(documents.router)
