@@ -5,7 +5,7 @@ from routers import chat, healthcheck, documents
 from config import get_settings
 
 db_connection = psycopg.connect(
-  database=get_settings().postgres_db,
+  dbname=get_settings().postgres_db,
   host=get_settings().postgres_host,
   user=get_settings().postgres_user,
   password=get_settings().postgres_password,
@@ -14,7 +14,8 @@ db_connection = psycopg.connect(
 
 app = FastAPI(debug=True)
 origins = [
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "http://frontend:3000"
 ]
 
 app.add_middleware(
