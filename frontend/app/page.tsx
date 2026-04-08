@@ -35,7 +35,7 @@ export default function ChatPage() {
 
       const assistantMessage: Message = {
         role: ROLES.ASSISTANT,
-        content: data.message,
+        content: data.response,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
