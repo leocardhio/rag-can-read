@@ -2,9 +2,8 @@ version: "3.8"
 
 # DEV ONLY
 services:
-  frontend:
+  nextjs-app:
     build: .
-    container_name: nextjs-app
     ports:
       - "3000:3000"
     env_file:
