@@ -18,9 +18,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/parser": "^8.58.1",
+    "add": "^2.0.6",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "prettier": "^3.8.2",
+    "prettier-eslint": "^17.0.0-alpha.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "yarn": "^1.22.22"
   }
 }
