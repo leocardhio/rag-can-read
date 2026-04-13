@@ -1,16 +1,10 @@
-import psycopg
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import chat, healthcheck, documents
-from config import get_settings
 
-db_connection = psycopg.connect(
-  dbname=get_settings().postgres_db,
-  host=get_settings().postgres_host,
-  user=get_settings().postgres_user,
-  password=get_settings().postgres_password,
-  port=get_settings().postgres_port
-)
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(debug=True)
 origins = [

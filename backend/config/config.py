@@ -10,8 +10,10 @@ class Config(BaseSettings):
   postgres_host: str
   postgres_port: str
   
-  llm_model_name: str
-  llm_base_url: str
+  ollama_host: str | None
+  ollama_model_name: str | None
+  llm_model_name: str | None
+  llm_base_url: str | None
   llm_api_key: str | None
 
   model_config = SettingsConfigDict(env_file='.env')

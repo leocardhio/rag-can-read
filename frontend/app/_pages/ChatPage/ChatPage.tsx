@@ -152,7 +152,7 @@ export default function ChatPage(): JSX.Element {
     _getFetchOptions(),
   );
   const states = _useStates(fetchResult);
-  const { messages, error } = states;
+  const { error } = states;
 
   _updateMessages(states.data?.response, states);
 
