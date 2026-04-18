@@ -1,13 +1,18 @@
 from logging.config import fileConfig
+from config import get_settings
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from migrations.utils import get_url
 
 from alembic import context
+from pgai.alembic import register_operations
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+project_settings = get_settings()
+register_operations()
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -25,7 +30,6 @@ target_metadata = None
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -38,7 +42,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # url = config.get_main_option("sqlalchemy.url")
+    url = get_url(project_settings)
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -57,15 +62,24 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    alembic_config = config.get_section(config.config_ini_section, {})
+    alembic_config['sqlalchemy.url'] = get_url(project_settings)
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        alembic_config,
         prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+        poolclass=pool.NullPool
     )
 
     with connectable.connect() as connection:
+        def include_object(object, name, type_, reflected, compare_to):
+            if type_ == "table" and name in target_metadata.info.get("pgai_managed_tables", set()):
+                return False
+            return True
+
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            # include_object=include_object
         )
 
         with context.begin_transaction():

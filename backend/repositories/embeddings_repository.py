@@ -10,15 +10,7 @@ class EmbeddingsRepository():
     self.__create_table()
     
   def __create_table(self):
-    self.connection.execute('''
-      CREATE TABLE IF NOT EXISTS embeddings (
-        id BIGSERIAL PRIMARY KEY,
-        title TEXT,
-        content TEXT,
-        TOKENS INTEGER,
-        embedding VECTOR(1536)
-      )
-    ''')
+    self.connection.execute()
     logger.info("Ensured embeddings table exists")
 
   def find_all(self):
