@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from config import get_settings
 
-from .embeddings_repository import EmbeddingsRepository
+from .contexts_repository import ContextsRepository
 from .chat_history_repository import ChatHistoryRepository
 
 
@@ -25,6 +25,6 @@ register_vector(db_connection)
 @lru_cache
 def get_repositories():
   return {
-    "embeddings": EmbeddingsRepository(db_connection),
+    "contexts": ContextsRepository(db_connection),
     "chat_history": ChatHistoryRepository(db_connection)
   }

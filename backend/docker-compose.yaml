@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   fastapi-app:
-    build: .
+    build: Dockerfile.service
     ports:
       - "8000:8000"
     volumes:
@@ -15,7 +15,7 @@ services:
       - app-network
 
   postgres-db:
-    image: postgres:15-alpine
+    build: Dockerfile.database
     env_file:
       - .env
     volumes:

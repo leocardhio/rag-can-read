@@ -3,4 +3,9 @@ PyMuPDF
 psycopg[binary,pool]
 requests
 sqlalchemy
-pgai[vectorizer-worker,sqlalchemy]
+pandas
+numpy
+tiktoken
+pgvector
+ollama
+langchain

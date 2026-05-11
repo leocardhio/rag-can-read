@@ -6,17 +6,11 @@ Create Date: 2026-04-15 22:56:04.676614
 
 """
 import sqlalchemy as sa
-import pgai
 
 from migrations.utils import get_url
 from typing import Sequence, Union
 from alembic import op
-from pgai.vectorizer.configuration import (
-    EmbeddingOllamaConfig, 
-    ChunkingRecursiveCharacterTextSplitterConfig,
-    FormattingPythonTemplateConfig,
-    DestinationTableConfig
-)
+from pgvector import Vector
 
 from config import get_settings
 
@@ -29,52 +23,31 @@ depends_on: Union[str, Sequence[str], None] = None
 
 config = get_settings()
 
-def create_vectorizer() -> None:
-    op.create_vectorizer(
-        source="contexts",
-        destination=DestinationTableConfig(target_table="contexts_embedding_store"),
-        embedding=EmbeddingOllamaConfig(
-            model="qwen3-embedding:4b",
-            dimensions=1024
-        ),
-        chunking=ChunkingRecursiveCharacterTextSplitterConfig(
-            chunk_size=500,
-            chunk_overlap=50,
-            separators=["\n\n", "\n", " ", ""]
-        ),
-        formatting=FormattingPythonTemplateConfig(template='$title - $chunk')
+def create_contexts_table() -> None:
+    op.create_table(
+        'contexts',
+        sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
+        sa.Column('title', sa.VARCHAR(255), nullable=False),
+        sa.Column('content', sa.Text, nullable=False),
+        sa.Column('embedding', Vector(1024), nullable=True)
     )
+    
+def drop_contexts_table() -> None:
+    op.execute('DROP TABLE IF EXISTS contexts CASCADE')
 
-def install_pgai() -> None:
-    try:
-        url = get_url(config)
-        pgai.install(url)
-    except Exception as e:
-        print(f"Error occurred while installing pgai: {e}")
-        
-def uninstall_pgai() -> None:
-    try:
-        op.execute('DROP SCHEMA IF EXIST ai CASCADE')
-        op.execute('DROP EXTENSION IF EXISTS ai')
-    except Exception as e:
-        print(f"Error occurred while uninstalling pgai: {e}")
+def install_pgvector() -> None:
+    op.execute('CREATE EXTENSION IF NOT EXISTS vector')   
+
+def uninstall_pgvector() -> None:
+    op.execute('DROP EXTENSION IF EXISTS vector')
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.execute('''
-      CREATE TABLE IF NOT EXISTS contexts (
-        id BIGSERIAL PRIMARY KEY,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL
-      )
-    ''')
-    install_pgai()
-    create_vectorizer()
-    
+    install_pgvector()
+    create_contexts_table()
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.execute('DROP TABLE IF EXISTS contexts CASCADE')
-    op.drop_vectorizer(target_table="contexts_embedding_store", drop_all=True)
-    uninstall_pgai()
+    drop_contexts_table()
+    uninstall_pgvector()
